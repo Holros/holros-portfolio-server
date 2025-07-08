@@ -1,0 +1,1 @@
+{"version":3,"file":"emailSchema.js","sourceRoot":"","sources":["../../src/schemas/emailSchema.ts"],"names":[],"mappings":";;;AAAA,6BAAwB;AAEX,QAAA,WAAW,GAAG,OAAC;KACzB,MAAM,CAAC;IACN,KAAK,EAAE,OAAC;SACL,MAAM,EAAE;SACR,IAAI,EAAE;SACN,KAAK,CAAC,qCAAqC,CAAC;SAC5C,WAAW,EAAE;CACjB,CAAC;KACD,MAAM,EAAE,CAAC"}
