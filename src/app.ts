@@ -38,6 +38,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", loginRequired, adminRouter);
 app.use("/api/user", userRouter);
 
+// Health check endpoint
+app.get("/", async (_, res) => {
+  res.send("OK!");
+});
+
 app.all("*any", (req, res) => {
   errorResponse(
     res,
