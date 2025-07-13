@@ -24,7 +24,8 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.ORIGIN || "http://localhost:3000",
+    origin:
+      process.env.ORIGIN || "http://localhost:5173",
     credentials: true,
   })
 );
@@ -57,19 +58,3 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`app is running in port ${port}`);
 });
-
-{
-  /*
-  Teleport todo
-2) Host and connect to frontend
- */
-  /*
-  Teleport todo frontend
-1) Add loaders to all images
-2) Connect the backend and add fallback UIs where needed
-3) Create the admin login and edit access page
-4) Add a filter by category to the projects
-5) change the cards of the projects it needs to allow mobile apps now
-6) Check for any other thing worth changing
- */
-}
