@@ -14,7 +14,7 @@ const prisma = new PrismaClient().$extends(withAccelerate());
 userRouter.get("/", async (req, res) => {
   const user = await prisma.user.findFirst({
     where: {
-      email: { equals: process.env.MY_EMAIL, mode: "insensitive" },
+      id: process.env.MY_USER_ID,
     },
     include: {
       testimonials: true,
@@ -93,7 +93,7 @@ userRouter.get(
       take: 10, // Limit to 10 projects for performance
       skip: (pageNumber - 1) * 10,
       orderBy: {
-        index: "desc",
+        updated_at: "desc",
       },
     });
 

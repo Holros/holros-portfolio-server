@@ -39,11 +39,7 @@ projectRouter.post(
 
     const projectPictureUrl = await uploadImageToCloud(file.buffer);
 
-    const user = await prisma.user.findFirst({
-      where: {
-        email: { equals: process.env.MY_EMAIL, mode: "insensitive" },
-      },
-    });
+    const userId = req.user.id;
 
     const addedProject = await prisma.project.create({
       data: {
@@ -54,7 +50,7 @@ projectRouter.post(
         liveLink: liveLink,
         androidLink: androidLink,
         iosLink: iosLink,
-        userId: user?.id,
+        userId,
         skills: {
           connect: skills.map((skill: { shortName: string }) => ({
             shortName: skill.shortName,
@@ -131,6 +127,25 @@ projectRouter.patch(
     });
 
     successResponse(res, "Project updated successfully", updatedProject, 200);
+  }
+);
+
+projectRouter.delete(
+  "/delete/:id",
+  validate(idSchema, "params"),
+  async (req, res) => {
+    const { id } = req.params as unknown as z.infer<typeof idSchema>;
+
+    const existingProject = await prisma.project.findUnique({
+      where: { id },
+    });
+
+    if (!existingProject)
+      return errorResponse(res, "Project not found", null, 404);
+
+    await prisma.project.delete({ where: { id: id } });
+
+    successResponse(res, "Project deleted successfully", null, 200);
   }
 );
 

@@ -28,11 +28,7 @@ testimonialRouter.post(
 
     const profilePictureUrl = await uploadImageToCloud(file.buffer);
 
-    const user = await prisma.user.findFirst({
-      where: {
-        email: { equals: process.env.MY_EMAIL, mode: "insensitive" },
-      },
-    });
+    const userId = req.user.id;
 
     const addedTestimonial = await prisma.testimonial.create({
       data: {
@@ -40,7 +36,7 @@ testimonialRouter.post(
         lastName: lastName,
         profilePicture: profilePictureUrl,
         testimonial: testimonial,
-        userId: user?.id,
+        userId,
       },
     });
 
@@ -95,6 +91,25 @@ testimonialRouter.patch(
       updatedTestimonial,
       200
     );
+  }
+);
+
+testimonialRouter.delete(
+  "/delete/:id",
+  validate(idSchema, "params"),
+  async (req, res) => {
+    const { id } = req.params as unknown as z.infer<typeof idSchema>;
+
+    const existingProject = await prisma.testimonial.findUnique({
+      where: { id },
+    });
+
+    if (!existingProject)
+      return errorResponse(res, "Testimonial not found", null, 404);
+
+    await prisma.project.delete({ where: { id: id } });
+
+    successResponse(res, "Testimonial deleted successfully", null, 200);
   }
 );
 

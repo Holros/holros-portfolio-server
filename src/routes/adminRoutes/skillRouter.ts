@@ -12,6 +12,8 @@ skillRouter.post("/create", validate(skillSchema), async (req, res) => {
     typeof skillSchema
   >;
 
+  const userId = req.user.id;
+
   // Check if the skill already exists
   const existingSkill = await prisma.skill.findUnique({
     where: { shortName: shortName },
@@ -22,17 +24,26 @@ skillRouter.post("/create", validate(skillSchema), async (req, res) => {
   }
 
   const createdSkill = await prisma.skill.create({
-    data: { shortName, fullName },
+    data: { shortName, fullName, userId },
   });
   successResponse(res, "Skill created successfully", createdSkill, 201);
 });
 
+const shortNameSchema = z
+  .object({
+    shortName: z.string().trim().min(1, "Short name is required").toLowerCase(),
+  })
+  .strict();
+
 skillRouter.patch(
   "/update/:shortName",
   validate(skillSchema.partial()),
+  validate(shortNameSchema, "params"),
   async (req, res) => {
     const dataToUpdate = req.body as unknown as z.infer<typeof skillSchema>;
-    const { shortName } = req.params as unknown as { shortName: string };
+    const { shortName } = req.params as unknown as z.infer<
+      typeof shortNameSchema
+    >;
     // Check if the skill exists
     const isSkill = await prisma.skill.findUnique({
       where: { shortName: shortName },
@@ -58,6 +69,27 @@ skillRouter.patch(
     });
 
     successResponse(res, "Skill updated successfully", updatedSkill, 200);
+  }
+);
+
+skillRouter.delete(
+  "/delete/:shortName",
+  validate(shortNameSchema, "params"),
+  async (req, res) => {
+    const { shortName } = req.params as unknown as z.infer<
+      typeof shortNameSchema
+    >;
+
+    const existingSkill = await prisma.skill.findUnique({
+      where: { shortName: shortName },
+    });
+
+    if (!existingSkill)
+      return errorResponse(res, "Skill don't exist", null, 404);
+
+    await prisma.skill.delete({ where: { shortName: shortName } });
+
+    successResponse(res, "Skill deleted successfully", null, 200);
   }
 );
 

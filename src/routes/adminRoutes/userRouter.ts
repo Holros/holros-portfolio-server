@@ -5,6 +5,7 @@ import { validate } from "../../middlewares/validate";
 import { userSchema } from "../../schemas/userSchema";
 import { prisma } from "../../utils/db";
 import { z } from "zod";
+import loginRequired from "../../middlewares/loginRequired";
 
 const userRouter = express.Router();
 
@@ -47,6 +48,7 @@ userRouter.post("/create", validate(userSchema), async (req, res) => {
 
 userRouter.patch(
   "/update",
+  loginRequired,
   validate(userSchema.partial()),
   async (req, res) => {
     const { id } = req.user;
