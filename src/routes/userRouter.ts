@@ -50,8 +50,12 @@ userRouter.get("/skills", async (req, res) => {
 
 const querySchema = z
   .object({
-    skills: z.string().array().optional(),
+    skills: z
+      .union([z.string(), z.array(z.string())])
+      .optional()
+      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : [])),
     page: z.coerce.number().min(1).optional().default(1),
+    page_size: z.coerce.number().min(1).optional().default(10),
   })
   .strict();
 
@@ -60,14 +64,19 @@ userRouter.get(
   "/projects",
   validate(querySchema, "query"),
   async (req, res) => {
-    const { skills, page } = req.safeQuery as unknown as z.infer<
+    const { skills, page, page_size } = req.safeQuery as unknown as z.infer<
       typeof querySchema
     >;
 
+    console.log({ skills });
+
     const pageNumber = Number(page);
+    const pageSize = Number(page_size);
 
     // Normalize to array
     const skillArray = Array.isArray(skills) ? skills : skills ? [skills] : [];
+
+    console.log({ skillArray });
 
     const filters =
       skillArray.length > 0
@@ -90,8 +99,8 @@ userRouter.get(
       include: {
         skills: true,
       },
-      take: 10, // Limit to 10 projects for performance
-      skip: (pageNumber - 1) * 10,
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
       orderBy: {
         updated_at: "desc",
       },
@@ -101,7 +110,11 @@ userRouter.get(
       where: { userId: process.env.MY_USER_ID, ...filters },
     });
 
-    const paginationObject = getPaginationObject(totalCount, pageNumber);
+    const paginationObject = getPaginationObject(
+      totalCount,
+      pageNumber,
+      pageSize
+    );
 
     successResponse(
       res,
@@ -110,7 +123,7 @@ userRouter.get(
         : "No matching projects found",
       {
         projects,
-        pageination: paginationObject,
+        pagination: paginationObject,
       },
       200
     );

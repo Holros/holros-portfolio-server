@@ -1,13 +1,14 @@
 export default function getPaginationObject(
   totalItems: number,
-  currentPage: number
+  currentPage: number,
+  pageSize: number
 ) {
-  const totalPages = Math.ceil(totalItems / 10);
+  const totalPages = Math.ceil(totalItems / pageSize);
   return {
     totalItems: totalItems,
     totalPages: totalPages,
     currentPage: currentPage,
-    pageSize: 10,
+    pageSize: pageSize,
     hasPreviousPage: currentPage > 1,
     hasNextPage: currentPage < totalPages,
   };
