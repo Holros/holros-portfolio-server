@@ -8,15 +8,27 @@ const baseSchema = z
     githubLink: z
       .string()
       .trim()
-      .url("GitHub link must be a valid URL")
-      .optional(),
-    liveLink: z.string().trim().url("Live link must be a valid URL").optional(),
+      .transform((v) => (v === "" ? undefined : v))
+      .optional()
+      .pipe(z.string().url("GitHub link must be a valid URL").optional()),
+    liveLink: z
+      .string()
+      .trim()
+      .transform((v) => (v === "" ? undefined : v))
+      .optional()
+      .pipe(z.string().url("Live link must be a valid URL").optional()),
     androidLink: z
       .string()
       .trim()
-      .url("Android link must be a valid URL")
-      .optional(),
-    iosLink: z.string().trim().url("IOS link must be a valid URL").optional(),
+      .transform((v) => (v === "" ? undefined : v))
+      .optional()
+      .pipe(z.string().url("Android link must be a valid URL").optional()),
+    iosLink: z
+      .string()
+      .trim()
+      .transform((v) => (v === "" ? undefined : v))
+      .optional()
+      .pipe(z.string().url("IOS link must be a valid URL").optional()),
     skills: z
       .array(z.object({ shortName: z.string().trim().toLowerCase() }))
       .min(1, "At least one skill must be selected"),
@@ -59,13 +71,14 @@ export const projectSchema = baseSchema.superRefine((data, ctx) => {
     }
   } else {
     // For web apps: liveLink required, android + ios must be empty
-    if (!data.liveLink || data.liveLink === "") {
-      ctx.addIssue({
-        path: ["liveLink"],
-        message: "Live link is required for web projects.",
-        code: z.ZodIssueCode.custom,
-      });
-    }
+    // for now we are not making liveLink mandatory
+    // if (!data.liveLink || data.liveLink === "") {
+    //   ctx.addIssue({
+    //     path: ["liveLink"],
+    //     message: "Live link is required for web projects.",
+    //     code: z.ZodIssueCode.custom,
+    //   });
+    // }
 
     if (data.androidLink && data.androidLink !== "") {
       ctx.addIssue({
@@ -126,13 +139,14 @@ export const partialProjectSchema = baseSchema
     }
 
     if (data.isMobileApp === false) {
-      if (!data.liveLink || data.liveLink === "") {
-        ctx.addIssue({
-          path: ["liveLink"],
-          message: "Live link is required for web projects.",
-          code: z.ZodIssueCode.custom,
-        });
-      }
+      //for now we are not making liveLink mandatory
+      // if (!data.liveLink || data.liveLink === "") {
+      //   ctx.addIssue({
+      //     path: ["liveLink"],
+      //     message: "Live link is required for web projects.",
+      //     code: z.ZodIssueCode.custom,
+      //   });
+      // }
 
       if (data.androidLink) {
         ctx.addIssue({

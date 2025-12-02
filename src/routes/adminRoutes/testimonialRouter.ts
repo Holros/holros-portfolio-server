@@ -100,14 +100,14 @@ testimonialRouter.delete(
   async (req, res) => {
     const { id } = req.params as unknown as z.infer<typeof idSchema>;
 
-    const existingProject = await prisma.testimonial.findUnique({
+    const existingTestimonial = await prisma.testimonial.findUnique({
       where: { id },
     });
 
-    if (!existingProject)
+    if (!existingTestimonial)
       return errorResponse(res, "Testimonial not found", null, 404);
 
-    await prisma.project.delete({ where: { id: id } });
+    await prisma.testimonial.delete({ where: { id: id } });
 
     successResponse(res, "Testimonial deleted successfully", null, 200);
   }

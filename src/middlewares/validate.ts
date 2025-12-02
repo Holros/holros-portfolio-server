@@ -7,7 +7,7 @@ import { errorResponse } from "../utils/serverResponse";
 export const validate =
   (schema: ZodSchema, source: "body" | "query" | "params" = "body") =>
   (req: Request, res: Response, next: NextFunction) => {
-    console.log(req[source], "hilla")
+    // console.log(req[source], "hilla")
     const result = schema.safeParse(req[source]);
     if (!result.success) {
       const validationErrors = result.error.errors.map((err) => ({

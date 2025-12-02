@@ -68,15 +68,11 @@ userRouter.get(
       typeof querySchema
     >;
 
-    console.log({ skills });
-
     const pageNumber = Number(page);
     const pageSize = Number(page_size);
 
     // Normalize to array
     const skillArray = Array.isArray(skills) ? skills : skills ? [skills] : [];
-
-    console.log({ skillArray });
 
     const filters =
       skillArray.length > 0

@@ -20,15 +20,16 @@ export default function loginRequired(
     );
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(" ")[1]?.trim();
 
-  if (!token)
+  if (!token || token === "undefined") {
     return errorResponse(
       res,
       "Access token required, Please login first",
       null,
       400
     );
+  }
 
   try {
     const decoded = jwt.verify(token, accessJwtSecret);
